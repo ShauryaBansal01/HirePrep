@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken'
 import User from '../models/User';
 
 export const registerUser = async (name: string, email: string, password: string) => {
@@ -27,3 +28,30 @@ export const registerUser = async (name: string, email: string, password: string
     return safeUser;
 
 };
+
+
+export const loginUser = async (email : string , password : string) => {
+    if(!email || !password){
+        throw new Error("Enter all the credentials");
+    }
+
+    const userCheck = await User.findOne({email});
+    if(!userCheck){
+        throw new Error("Invalid Credentials !")
+    }
+
+    const passwordCheck = await bcrypt.compare(password , userCheck.password);
+    if(!passwordCheck){
+        throw new Error("Invalid Credentials !");
+    }
+
+    const token = jwt.sign({id : userCheck._id ,
+        role: userCheck.role },
+        process.env.JWT_SECRET as string ,
+        {expiresIn : '1d'}
+    )
+
+    const userObj = userCheck.toObject();
+    const { password: _, ...safeUser } = userObj;
+    return {token , safeUser};
+}
