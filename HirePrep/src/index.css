@@ -1,1 +1,20 @@
 @import "tailwindcss";
+
+@theme {
+  --color-background: #0f172a; /* slate-900 */
+  --color-foreground: #f8fafc; /* slate-50 */
+  --color-primary: #8b5cf6;    /* violet-500 */
+  --color-primary-hover: #7c3aed; /* violet-600 */
+  --color-surface: #1e293b;    /* slate-800 */
+  --color-border: #334155;     /* slate-700 */
+}
+
+/* Base resets to enforce the dark theme */
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+}
