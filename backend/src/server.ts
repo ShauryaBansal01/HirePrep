@@ -3,13 +3,15 @@ import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import authRoutes from "./routes/authRoutes";
+import interviewRoutes from './routes/interviewRoutes';
 
 dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
-
 app.use("/api/auth", authRoutes);
+app.use('/api/interviews', interviewRoutes);
+
 const connectDB = async () =>{
     try{
         const uri = process.env.MONGO_URI ;
