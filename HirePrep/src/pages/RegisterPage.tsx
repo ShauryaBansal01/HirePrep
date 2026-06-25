@@ -19,10 +19,8 @@ export default function RegisterPage() {
       // 1. CALL YOUR REGISTER SERVICE FUNCTION HERE
       const response = await register(name , email , password);
       if(response){
-        navigate('/register')
+        navigate('/login')
       }
-      // 2. IF SUCCESSFUL, REDIRECT TO LOGIN PAGE
-      // navigate('/login')
       
     } catch (err: any) {
       // Axios stores the backend error in err.response.data.error

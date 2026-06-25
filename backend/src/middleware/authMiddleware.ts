@@ -18,7 +18,7 @@ export const protect = (req: Request, res: Response, next: NextFunction): void =
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
     
     // 4. Attach the decoded user data (which contains { id, role }) to the request
-    req.user = decoded;
+    (req as any).user = decoded;
     
     // 5. Let them pass to the Controller!
     next();
