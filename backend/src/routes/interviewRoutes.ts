@@ -1,10 +1,12 @@
 import { Router } from 'express';
-import { generateInterview } from '../controllers/interviewController';
+import { generateInterview, getInterview, submitInterview, getInterviewHistory } from '../controllers/interviewController';
 import { protect } from '../middleware/authMiddleware';
 
 const router = Router();
 
-// The user must pass the 'protect' Bouncer to reach the Controller!
 router.post('/generate', protect, generateInterview);
+router.get('/history', protect, getInterviewHistory); // MUST be before /:id
+router.get('/:id', protect, getInterview);
+router.post('/:id/submit', protect, submitInterview);
 
 export default router;

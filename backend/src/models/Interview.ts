@@ -6,6 +6,9 @@ export interface IInterview extends Document {
   role: string;
   difficulty: string;
   questions: string[];
+  answers: string[];
+  feedback: any[];
+  totalScore: number;
   status: "pending" | "completed";
 }
 
@@ -28,6 +31,20 @@ const interviewSchema = new Schema<IInterview>(
     questions: {
       type: [String], // Array of strings
       required: true,
+    },
+    answers: {
+      type: [String],
+      default: []
+    },
+    feedback: [
+      {
+        score: { type: Number },
+        feedback: { type: String }
+      }
+    ],
+    totalScore: {
+      type: Number,
+      default: 0
     },
     status: {
       type: String,
