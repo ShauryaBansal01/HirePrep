@@ -44,10 +44,10 @@ export const evaluateInterviewAnswers = async (role: string, questions: string[]
     Here are the interview questions and the candidate's answers:
     ${JSON.stringify(interviewData, null, 2)}
     
-    Evaluate each answer. For each question, provide a score out of 10, and a brief constructive feedback string.
-    Return ONLY a raw JSON array of objects with the exact keys: "score" (number) and "feedback" (string).
+    Evaluate each answer. For each question, provide a score out of 10, a brief constructive feedback string, and an ideal answer showing how the candidate should have answered.
+    Return ONLY a raw JSON array of objects with the exact keys: "score" (number), "feedback" (string), and "idealAnswer" (string).
     Do not include markdown formatting or backticks.
-    Example: [{"score": 8, "feedback": "Good answer, but could mention X."}]`;
+    Example: [{"score": 8, "feedback": "Good answer, but could mention X.", "idealAnswer": "A comprehensive answer would cover X, Y, and Z."}]`;
 
     try {
         const response = await ai.models.generateContent({

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchInterview } from '../services/interview';
 import { Card } from '../components/ui/Card';
@@ -69,6 +69,13 @@ export default function InterviewResultsPage() {
                                     <span className="text-xs font-bold text-primary uppercase tracking-wider mb-2 block">AI Feedback</span>
                                     <p className="text-foreground leading-relaxed">{f.feedback}</p>
                                 </div>
+                                {f.idealAnswer && (
+                                    <div className="bg-cyan-500/5 border border-cyan-500/20 p-4 rounded-lg relative overflow-hidden">
+                                        <div className="absolute top-0 left-0 w-1 h-full bg-cyan-500" />
+                                        <span className="text-xs font-bold text-cyan-400 uppercase tracking-wider mb-2 block">Ideal Answer</span>
+                                        <p className="text-foreground leading-relaxed">{f.idealAnswer}</p>
+                                    </div>
+                                )}
                             </div>
                         </Card>
                     );

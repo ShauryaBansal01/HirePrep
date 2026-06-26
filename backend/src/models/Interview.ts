@@ -39,7 +39,8 @@ const interviewSchema = new Schema<IInterview>(
     feedback: [
       {
         score: { type: Number },
-        feedback: { type: String }
+        feedback: { type: String },
+        idealAnswer: { type: String }
       }
     ],
     totalScore: {
