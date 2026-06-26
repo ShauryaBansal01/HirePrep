@@ -1,9 +1,13 @@
-import React from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
+import { useAuth } from '../context/AuthContext';
+import { UserCircle } from 'lucide-react';
 
 export default function Homepage() {
   const navigate = useNavigate();
+  const { token, logout } = useAuth();
+  const [showDropdown, setShowDropdown] = useState(false);
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
@@ -16,9 +20,34 @@ export default function Homepage() {
         <div className="text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">
           HirePrep.AI
         </div>
-        <div className="flex gap-4">
-          <Button variant="outline" onClick={() => navigate('/login')}>Log In</Button>
-          <Button onClick={() => navigate('/register')} className="shadow-[0_0_20px_rgba(139,92,246,0.3)]">Get Started</Button>
+        <div className="flex gap-4 items-center relative">
+          {token ? (
+            <>
+              <Button variant="outline" onClick={() => navigate('/dashboard')}>Dashboard</Button>
+              <button 
+                onClick={() => setShowDropdown(!showDropdown)} 
+                className="text-gray-400 hover:text-white hover:bg-white/10 p-2 rounded-full transition-all"
+              >
+                <UserCircle className="w-6 h-6" />
+              </button>
+              
+              {showDropdown && (
+                <div className="absolute top-full right-0 mt-2 w-40 glass-card rounded-lg overflow-hidden flex flex-col z-50">
+                  <button 
+                    onClick={logout}
+                    className="w-full text-left px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 transition-colors text-sm font-medium"
+                  >
+                    Log out
+                  </button>
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              <Button variant="outline" onClick={() => navigate('/login')}>Log In</Button>
+              <Button onClick={() => navigate('/register')} className="shadow-[0_0_20px_rgba(139,92,246,0.3)]">Get Started</Button>
+            </>
+          )}
         </div>
       </nav>
 
@@ -37,9 +66,15 @@ export default function Homepage() {
           Experience hyper-realistic mock interviews tailored to your exact role and seniority. Speak your answers, get instantly graded by AI, and land your dream job.
         </p>
         <div className="flex gap-6">
-          <Button onClick={() => navigate('/register')} className="h-14 px-8 text-lg shadow-[0_0_30px_rgba(139,92,246,0.4)] hover:shadow-[0_0_50px_rgba(139,92,246,0.6)] transition-all">
-            Start Practicing Free
-          </Button>
+          {token ? (
+            <Button onClick={() => navigate('/dashboard')} className="h-14 px-8 text-lg shadow-[0_0_30px_rgba(139,92,246,0.4)] hover:shadow-[0_0_50px_rgba(139,92,246,0.6)] transition-all">
+              Go to Dashboard
+            </Button>
+          ) : (
+            <Button onClick={() => navigate('/register')} className="h-14 px-8 text-lg shadow-[0_0_30px_rgba(139,92,246,0.4)] hover:shadow-[0_0_50px_rgba(139,92,246,0.6)] transition-all">
+              Start Practicing Free
+            </Button>
+          )}
         </div>
       </main>
 

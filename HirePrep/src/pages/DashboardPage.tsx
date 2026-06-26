@@ -1,32 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/Button';
-import { Card } from '../components/ui/Card';
-import { Input } from '../components/ui/Input';
-import { generateInterview, getInterviewHistory } from '../services/interview';
-import { useNavigate } from 'react-router-dom';
+import { generateInterview } from '../services/interview';
+import { useNavigate, Link } from 'react-router-dom';
+import { 
+  Search, 
+  ArrowRight, 
+  Code, 
+  PieChart, 
+  BarChart, 
+  PenTool,
+  UserCircle
+} from 'lucide-react';
 
 export default function DashboardPage() {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
 
   const [role, setRole] = useState('');
-  const [difficulty, setDifficulty] = useState('Intermediate');
   const [loading, setLoading] = useState(false);
-  
-  const [history, setHistory] = useState<any[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
 
-  useEffect(() => {
-    // Load history
-    getInterviewHistory().then(data => setHistory(data)).catch(err => console.error(err));
-  }, []);
-
-  const handleGenerate = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleGenerate = async (selectedRole: string = role) => {
+    if (!selectedRole.trim()) return;
     setLoading(true);
 
     try {
-      const newInterview = await generateInterview(role, difficulty);
+      const newInterview = await generateInterview(selectedRole, 'Intermediate');
       navigate(`/interview/${newInterview._id}`);
     } catch (err: any) {
       console.error(err);
@@ -36,78 +36,108 @@ export default function DashboardPage() {
     }
   };
 
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleGenerate(role);
+  };
+
+  const popularRoles = [
+    { name: "Software Engineering", icon: Code },
+    { name: "Product Management", icon: PieChart },
+    { name: "Data Science", icon: BarChart },
+    { name: "UX Design", icon: PenTool },
+  ];
+
   return (
-    <div className="min-h-screen p-8 max-w-6xl mx-auto">
-      <div className="flex justify-between items-center mb-12">
-        <div>
-          <h1 className="text-4xl font-black tracking-tight text-foreground">
-            Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">{user?.name}</span>
-          </h1>
-          <p className="text-gray-400 mt-2">Ready to crush your next interview?</p>
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary/20 flex flex-col">
+      {/* Top Navigation */}
+      <nav className="relative z-10 w-full px-8 py-6 flex items-center justify-between">
+        <div className="flex items-center gap-12">
+          <h1 className="text-display-lg-mobile text-[#d0bcff] tracking-tight">HirePrep</h1>
+          <div className="hidden md:flex items-center gap-8 text-body-md text-gray-300">
+            <Link to="/dashboard" className="text-white border-b-2 border-primary pb-1 font-medium">Practice</Link>
+            <Link to="/insights" className="hover:text-white transition-colors">Insights</Link>
+            <a href="#" className="hover:text-white transition-colors">Roles</a>
+          </div>
         </div>
-        <Button variant="outline" onClick={logout} className="border-border text-gray-400 hover:text-white">
-          Logout
-        </Button>
-      </div>
+        
+        <div className="flex items-center gap-6 relative">
+          <button 
+            onClick={() => setShowDropdown(!showDropdown)} 
+            className="text-gray-400 hover:text-white hover:bg-white/10 p-2 rounded-full transition-all"
+          >
+            <UserCircle className="w-6 h-6" />
+          </button>
 
-      <div className="grid lg:grid-cols-3 gap-8">
-        <Card className="p-8 lg:col-span-1 glass-card border-primary/20 relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-blue-500" />
-          <h2 className="text-2xl font-bold mb-6">New Interview</h2>
-          
-          <form onSubmit={handleGenerate} className="space-y-6">
-            <Input 
-              label="Job Role" 
-              placeholder="e.g. Frontend Engineer" 
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              required
-            />
-            
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-gray-300">Difficulty</label>
-              <select 
-                className="w-full bg-input border border-border text-foreground px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                value={difficulty}
-                onChange={(e) => setDifficulty(e.target.value)}
+          {showDropdown && (
+            <div className="absolute top-full right-0 mt-2 w-40 glass-card rounded-lg overflow-hidden flex flex-col z-50">
+              <button 
+                onClick={logout}
+                className="w-full text-left px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 transition-colors text-sm font-medium"
               >
-                <option value="Beginner">Beginner</option>
-                <option value="Intermediate">Intermediate</option>
-                <option value="Advanced">Advanced</option>
-              </select>
-            </div>
-
-            <Button type="submit" fullWidth disabled={loading} className="h-12 text-lg shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.5)]">
-              {loading ? 'Generating with AI...' : 'Start Interview'}
-            </Button>
-          </form>
-        </Card>
-
-        <div className="lg:col-span-2 space-y-6">
-          <h2 className="text-2xl font-bold">Your History</h2>
-          
-          {history.length === 0 ? (
-            <Card className="p-12 text-center border-dashed border-2 border-border bg-transparent">
-              <p className="text-gray-400">You haven't completed any interviews yet.</p>
-              <p className="text-sm mt-2">Generate your first one to get a score!</p>
-            </Card>
-          ) : (
-            <div className="grid gap-4">
-              {history.map((int: any) => (
-                <Card key={int._id} className="p-6 flex justify-between items-center hover:border-primary/50 transition-all cursor-pointer group" onClick={() => navigate(`/interview/${int._id}/results`)}>
-                  <div>
-                    <h3 className="font-bold text-lg group-hover:text-primary transition-colors">{int.role}</h3>
-                    <p className="text-sm text-gray-400">{int.difficulty} • {new Date(int.createdAt).toLocaleDateString()}</p>
-                  </div>
-                  <div className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-500">
-                    {int.totalScore}%
-                  </div>
-                </Card>
-              ))}
+                Log out
+              </button>
             </div>
           )}
         </div>
-      </div>
+      </nav>
+
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col items-center justify-center px-4 -mt-20">
+        <div className="text-center mb-12 space-y-4">
+          <h2 className="text-display-lg text-white">Define Your Trajectory</h2>
+          <p className="text-body-lg text-gray-400">What role are you preparing for?</p>
+        </div>
+
+        {/* Search / Input Area */}
+        <div className="w-full max-w-3xl relative mb-16">
+          <form onSubmit={handleFormSubmit} className="relative group">
+            {/* The Glow Effect */}
+            <div className="absolute inset-0 bg-primary/10 blur-xl rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+            
+            <div className="relative glass-card rounded-xl flex items-center p-2 focus-within:border-primary/40 transition-colors duration-300 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
+              <div className="pl-4 pr-3 text-gray-400">
+                <Search className="w-5 h-5" />
+              </div>
+              <input
+                type="text"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                placeholder="e.g. Senior Machine Learning Engineer"
+                className="flex-1 bg-transparent border-none text-body-lg text-white placeholder-gray-500 focus:outline-none py-3"
+              />
+              <Button 
+                type="submit" 
+                variant="secondary"
+                disabled={loading || !role.trim()}
+                className="ml-2 pr-5 pl-5 h-12 !bg-[rgba(208,188,255,0.15)] !border-[rgba(208,188,255,0.2)] hover:!bg-[rgba(208,188,255,0.25)] transition-all"
+              >
+                {loading ? 'Starting...' : 'Begin Session'}
+                {!loading && <ArrowRight className="w-4 h-4 ml-1" />}
+              </Button>
+            </div>
+          </form>
+        </div>
+
+        {/* Popular Trajectories */}
+        <div className="w-full max-w-3xl text-center">
+          <h3 className="text-label-caps text-gray-500 mb-6">Popular Trajectories</h3>
+          <div className="flex flex-wrap justify-center gap-4">
+            {popularRoles.map((pr) => (
+              <button
+                key={pr.name}
+                onClick={() => {
+                  setRole(pr.name);
+                }}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full glass border border-white/5 text-gray-300 hover:text-white hover:border-primary/30 hover:shadow-[0_0_15px_rgba(208,188,255,0.15)] transition-all duration-300 text-sm bg-[rgba(23,31,51,0.6)]"
+              >
+                <pr.icon className="w-4 h-4 text-cyan-400" />
+                <span>{pr.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
