@@ -6,6 +6,7 @@ import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 import InterviewSessionPage from './pages/InterviewSessionPage';
 import InterviewResultsPage from './pages/InterviewResultsPage';
+import InsightsPage from './pages/InsightsPage';
 import {Routes , Route} from 'react-router-dom';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/interview/:id" element={<InterviewSessionPage />} />
           <Route path="/interview/:id/results" element={<InterviewResultsPage />} />
+          <Route path="/insights" element={<InsightsPage />} />
         </Routes>
       </AuthProvider>
     </div>
